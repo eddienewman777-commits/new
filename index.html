@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Run-Node | Agartha Beta</title>
+    <style>
+        :root {
+            --apple-white: #FFFFFF;
+            --apple-glass: rgba(255, 255, 255, 0.85);
+            --apple-sidebar: #F2F2F7;
+            --apple-text: #000000;
+            --apple-secondary: #636366;
+            --apple-blue: #007AFF;
+            --solana-green: #248A3D;
+            --beta-purple: #5856D6;
+            --blur-radius: 40px;
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            background: linear-gradient(135deg, #d1d9e6 0%, #9baec8 100%);
+            background-image: radial-gradient(at 0% 0%, rgba(0, 122, 255, 0.15) 0, transparent 50%), 
+                              radial-gradient(at 100% 100%, rgba(36, 138, 61, 0.1) 0, transparent 50%);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            color: var(--apple-text); -webkit-font-smoothing: antialiased;
+        }
+
+        .apple-container {
+            width: 95%; height: 94vh;
+            background: var(--apple-glass);
+            backdrop-filter: blur(var(--blur-radius));
+            border-radius: 24px;
+            display: flex; overflow: hidden;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        /* PRIMARY COLUMN: Knowledge Brief */
+        .sidebar {
+            flex: 3;
+            background: var(--apple-sidebar);
+            padding: 50px 80px;
+            overflow-y: auto;
+            border-right: 2px solid rgba(0,0,0,0.08);
+            display: flex; flex-direction: column;
+        }
+
+        .brand-header {
+            display: flex; align-items: center; gap: 16px; margin-bottom: 40px;
+        }
+
+        .logo-img {
+            width: 52px; height: 52px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+        }
+
+        h1 { font-size: 34px; font-weight: 800; margin: 0; letter-spacing: -0.8px; }
+        
+        .beta-badge {
+            background: rgba(88, 86, 214, 0.1);
+            color: var(--beta-purple);
+            padding: 4px 10px; font-size: 12px; font-weight: 700;
+            border-radius: 6px; border: 1px solid rgba(88, 86, 214, 0.2);
+            text-transform: uppercase; margin-left: 12px;
+            vertical-align: middle;
+        }
+
+        .status-pill {
+            background: var(--apple-text);
+            color: var(--apple-white);
+            padding: 6px 16px; font-size: 13px; font-weight: 700;
+            border-radius: 30px; display: inline-block; margin-bottom: 32px;
+            align-self: flex-start;
+        }
+
+        .content-card {
+            background: var(--apple-white);
+            border-radius: 16px; padding: 24px; margin-bottom: 24px;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+
+        .hint-card {
+            background: #FFF9E6; border: 1px solid #FFD60A; color: #5C4B00;
+        }
+
+        h2 { 
+            font-size: 14px; font-weight: 800; color: var(--apple-secondary);
+            text-transform: uppercase; letter-spacing: 1px; margin: 40px 0 16px 0;
+        }
+
+        p, li { font-size: 16px; line-height: 1.6; color: var(--apple-text); margin-bottom: 16px; font-weight: 450; }
+
+        .code-container {
+            background: #1C1C1E;
+            padding: 24px; border-radius: 14px;
+            font-family: "SF Mono", "Menlo", monospace;
+            font-size: 14px; position: relative; margin: 16px 0;
+        }
+        .code-container code { line-height: 1.8; color: #64D2FF; display: block; white-space: pre-wrap; }
+        
+        .copy-button {
+            position: absolute; top: 12px; right: 12px;
+            background: var(--apple-blue); color: var(--apple-white); border: none;
+            padding: 6px 12px; font-size: 12px; font-weight: 700; border-radius: 6px; cursor: pointer;
+        }
+
+        .social-tray {
+            margin-top: 40px; padding-top: 30px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            display: flex; gap: 24px; align-items: center;
+        }
+        .social-icon {
+            width: 24px; height: 24px; fill: var(--apple-text);
+            transition: opacity 0.2s, transform 0.2s; cursor: pointer; opacity: 0.8;
+        }
+        .social-icon:hover { opacity: 1; transform: scale(1.1); fill: var(--apple-blue); }
+
+        /* SECONDARY COLUMN: Telemetry Monitor */
+        .main-view {
+            flex: 1.7;
+            display: flex; flex-direction: column;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 60px 40px;
+        }
+
+        .monitor-window {
+            flex-grow: 1;
+            background: #000000;
+            border-radius: 24px; padding: 24px;
+            overflow-y: auto; color: #FFFFFF;
+            font-family: "SF Mono", monospace; font-size: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            max-height: 550px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .log-line { line-height: 1.6; margin-bottom: 8px; opacity: 0.9; }
+        .telemetry-tag { color: var(--apple-blue); font-weight: 600; }
+        .telemetry-value { color: #64D2FF; }
+
+        .btn-group { margin-top: 32px; display: flex; flex-direction: column; gap: 12px; }
+        
+        .btn-apple {
+            width: 100%; padding: 18px; font-size: 16px; font-weight: 700;
+            border-radius: 14px; cursor: pointer; border: none; transition: 0.15s ease-in-out;
+        }
+
+        .btn-primary { background: var(--apple-text); color: var(--apple-white); }
+        .btn-primary:active { transform: scale(0.97); }
+
+        .btn-ghost { background: transparent; color: var(--apple-text); border: 2px solid var(--apple-text); }
+
+        .footer {
+            margin-top: auto; font-size: 13px; color: var(--apple-secondary);
+            padding-top: 40px; text-align: center; font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="apple-container">
+        <main class="sidebar">
+            <div class="brand-header">
+                <img src="logo.png" alt="Node" class="logo-img">
+                <h1>Run-Node <span class="beta-badge">Agartha Beta</span></h1>
+            </div>
+
+            <div class="status-pill">Active Cluster • 2026 Stable Uplink</div>
+
+            <div class="content-card hint-card">
+                <b>Series A Capital Expansion</b>
+                <p style="margin-top:6px; font-size:14px; font-weight: 600;">Institutional node cluster integration inquiries are active. Scaling to 100k+ concurrent nodes.</p>
+            </div>
+
+            <h2>1. Protocol Architecture</h2>
+            <div class="content-card">
+                <p style="margin:0;">Run-Node modularizes AI training through <b>AI Infrastructure</b>. Local Apple Silicon hardware becomes a verified cluster for decentralized neural backpropagation.</p>
+            </div>
+
+            <div class="content-card" style="border-left: 6px solid var(--solana-green);">
+                <b style="color: var(--solana-green);">Verified Incentive Layer ($RNN)</b>
+                <p style="margin-top:6px; font-size:14px;">Rewards issued via <b>PoC (Proof of Compute)</b>. Real-time consensus validation active on Solana.</p>
+            </div>
+
+            <h2>2. Verification Methodology</h2>
+            <p>Nodes execute <b>Stochastic Gradient Descent (SGD)</b> optimization, producing hashed gradients benchmarked for absolute ledger integrity.</p>
+
+            <h2>3. Deployment CLI</h2>
+            <div class="code-container">
+                <code id="fullInstall">git clone github.com/run-node/agartha-beta.git
+cd agartha-beta
+pip3 install -r requirements.txt
+python3 miner.py --initialize --network solana --version agartha</code>
+                <button class="copy-button" onclick="copyText('fullInstall')">Copy</button>
+            </div>
+
+            <h2>4. Hardware Profile</h2>
+            <p>Optimized for <b>Apple Neural Engine (ANE)</b>. Build: Agartha-B.2026. Optimized for M-Series silicon.</p>
+
+            <div class="social-tray">
+                <svg class="social-icon" viewBox="0 0 24 24"><path d="M11.944 0C5.346 0 0 5.346 0 11.944c0 6.598 5.346 11.944 11.944 11.944 6.598 0 11.944-5.346 11.944-11.944C23.888 5.346 18.542 0 11.944 0zm5.206 16.858c-.164.24-.469.324-.735.191l-3.08-1.524-1.442 1.391c-.131.127-.314.183-.497.151-.183-.032-.341-.144-.43-.306L10.05 15.02l-2.433-.807c-.267-.089-.444-.339-.444-.62s.178-.531.444-.62l10.222-3.407c.231-.077.485-.015.656.157s.234.425.157.656l-1.502 6.505z"/></svg>
+                <svg class="social-icon" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.666 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.078.078 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+                <svg class="social-icon" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                <svg class="social-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            </div>
+        </main>
+
+        <aside class="main-view">
+            <h3 style="font-size: 22px; font-weight: 800; margin: 0 0 20px 0;">Agartha Monitor</h3>
+            
+            <div class="monitor-window" id="console">
+                <div class="log-line">Ready for neural synchronization.</div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-apple btn-primary" onclick="deploy()">Initialize Node</button>
+                <button class="btn-apple btn-ghost" onclick="resetConsole()">Clear Log</button>
+            </div>
+
+            <footer class="footer">
+                Designed for Apple Silicon<br>
+                Run-Node Protocol • 2026
+            </footer>
+        </aside>
+    </div>
+
+    <script>
+        const t = document.getElementById('console');
+        let blocks = 0; let isRunning = false; let timeouts = [];
+
+        function log(msg) {
+            const d = document.createElement('div');
+            d.className = 'log-line';
+            d.innerHTML = msg;
+            t.appendChild(d);
+            t.scrollTop = t.scrollHeight;
+        }
+
+        function deploy() {
+            if (isRunning || blocks >= 3) return;
+            isRunning = true;
+            t.innerHTML = "<div class='log-line' style='color: var(--apple-blue)'>[Initialize] Accessing Neural Engine backplane...</div>";
+            const bootLogs = [
+                "Hardware Auth: Apple M-Series Silicon.",
+                "ANE Instruction Set: Agartha-B.2026 authorized.",
+                "Handshake: Secure Solana Uplink connected."
+            ];
+            
+            bootLogs.forEach((msg, i) => {
+                let to = setTimeout(() => {
+                    if(!isRunning) return;
+                    log(`[System] ${msg}`);
+                    if(i === bootLogs.length - 1) {
+                        setTimeout(loop, 1200);
+                    }
+                }, i * 800);
+                timeouts.push(to);
+            });
+        }
+
+        function loop() {
+            if(!isRunning || blocks >= 3) return;
+            
+            const hash = Math.random().toString(16).substring(2, 10);
+            const rate = (840 + (Math.random() * 60)).toFixed(2);
+            const util = (78 + Math.random() * 12).toFixed(1);
+            
+            log(`<span class="telemetry-tag">CYCLE_SYNC</span> | Hash: <span class="telemetry-value">0x${hash}...</span>`);
+            
+            setTimeout(() => {
+                log(`-- ANE Utilization: <span class="telemetry-value">${util}%</span>`);
+            }, 600);
+
+            setTimeout(() => {
+                log(`-- Tensor Latency: <span class="telemetry-value">0.38ms</span>`);
+                log(`-- Gradient Rate: <span class="telemetry-value">${rate} MH/s</span>`);
+            }, 1200);
+
+            setTimeout(() => {
+                log(`<span style='color:var(--solana-green)'>[Success]</span> Proof of Compute Verified.`);
+                blocks++;
+                if(blocks < 3) {
+                    let to = setTimeout(loop, 4500); 
+                    timeouts.push(to);
+                } else {
+                    log(`<br><div style="padding: 12px; background: rgba(52, 199, 89, 0.1); color: #34C759; border-radius: 8px;"><b>Batch Run Complete</b><br>3/3 Cycles verified. $RNN minted.</div>`);
+                }
+            }, 2000);
+        }
+
+        function resetConsole() {
+            isRunning = false; blocks = 0;
+            timeouts.forEach(clearTimeout); timeouts = [];
+            t.innerHTML = "<div class='log-line'>System idle.</div>";
+        }
+
+        function copyText(id) {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text);
+            alert("CLI Sequence Copied.");
+        }
+    </script>
+</body>
+</html>
